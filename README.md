@@ -1,24 +1,10 @@
-# README
+# Analytics Visualizer
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+SaaS application allowing users to get graphic reports about their website analytics.
 
-Things you may want to cover:
+The application accesses Google Analytics API and formats a weekly or monthly report.
 
-* Ruby version
+Visualizer is going to run on a freemium model where users get a basic report for free and a more compehensive roport for 5 USD a month.
 
-* System dependencies
 
-* Configuration
 
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
