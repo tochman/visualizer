@@ -1,0 +1,93 @@
+.intro
+  .row
+    .large-12.columns
+      %div{style: 'background-color:rgba(0,0,0,0.4); min-height:100%; width:100%;'}
+        .display-table{style: 'height:600px; width:100%;'}
+          .va-align
+            %div
+              Know | Your | Traffic
+            %br/
+            %h2 Analytics Visualizer
+            %br/
+            %br/
+            %button.orange-bg.button GET STARTED
+.about
+  .row
+    .large-12.columns
+      %h3
+        About
+        %span.orange
+          %b VISUALIZER
+      Get comprehensive reports about your website traffic sent out to you on a weekly or monthly basis - for free!
+.info
+  .row
+    .large-12.columns
+      %h4 Check out the best that Analytics Visualizer has to offer
+      %h6 How can increased insights help you make better decisions.
+      %a.orange-bg.button{href: '#', target: '_blank'} GET STARTED
+.team
+  %h3.text-center
+    Subscription
+    %span.orange
+      %b OPTIONS
+  .row
+    .medium-4.large-4.columns
+      .team-member
+        =  image_tag 'report-icon.png'
+        %div
+          %h5 Monthly
+          %p FREE!
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+          tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+          quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+          consequat.
+    .medium-4.large-4.columns
+      .team-member
+        =  image_tag 'report-icon.png'
+        %div
+          %h5 Weekly
+          %p 5 USD/month
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+          tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+          quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+          consequat.
+    .medium-4.large-4.columns
+      .team-member
+        =  image_tag 'report-icon.png'
+        %div
+          %h5 Daily
+          %p 15 USD/month
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+          tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+          quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+          consequat.
+.subscribe
+  .row
+    .large-12.columns
+      %h4 Stay Updated
+      .row.small-uncollapse.large-collapse
+        .large-11.columns
+          %input{placeholder: 'Your Email', type: 'text'}/
+        .large-1.columns
+          %a.orange-bg.button{href: '#'} Subscribe
+
+.contact
+  %div{style: 'background-color:rgba(0,0,0,0.4); min-height:100%; padding:32px; width:100%;'}
+    .row
+      .large-12.columns
+        .display-table{style: 'width:100%; padding:22px;'}
+          .va-align
+            %h4 info@craftacademy.se
+
+.footer
+  .row
+    .large-12.columns
+      .footer-social
+        %i.fi.fi-social-facebook
+        %i.fi.fi-social-twitter
+        %i.fi.fi-social-instagram
+        %i.fi.fi-social-linkedin
+      © CraftAcademy Labs 2015.
+
+:javascript
+  $(document).foundation();
