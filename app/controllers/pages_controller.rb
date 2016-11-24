@@ -10,7 +10,6 @@ class PagesController < ApplicationController
                                             scope: Google::Apis::AnalyticsV3::AUTH_ANALYTICS_READONLY,
                                             redirect_uri: url_for(action: :callback)
                                         })
-    binding.pry
     redirect_to client.authorization_uri.to_s
   end
 
@@ -24,21 +23,14 @@ class PagesController < ApplicationController
                                         })
 
     response = client.fetch_access_token!
-
     session[:access_token] = response['access_token']
-    binding.pry
-
     redirect_to url_for(action: :analytics)
   end
 
   def analytics
-    client = Signet::OAuth2::Client.new(access_token: session[:access_token])
-
     service = Google::Apis::AnalyticsV3::AnalyticsService.new
-
-    service.authorization = client
-    binding.pry
-
+    service.authorization = session[:access_token]
     @account_summaries = service.list_account_summaries
+    render layout: "application"
   end
 end
