@@ -10,6 +10,8 @@ gem 'uglifier', '>= 1.3.0'
 gem 'jquery-rails'
 gem 'turbolinks', '~> 5'
 
+gem 'foundation-rails'
+gem 'foundation-icons-sass-rails'
 gem 'haml-rails'
 
 group :development, :test do
