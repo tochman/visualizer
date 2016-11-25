@@ -35,7 +35,7 @@ class PagesController < ApplicationController
     profile_id = "ga:#{params[:profile_id]}"
     start_date = Date.today.beginning_of_week.strftime('%F')
     end_date = Date.today.end_of_week.strftime('%F')
-    metrics = 'ga:sessions'
+    metrics = 'ga:sessions,ga:uniquePageviews'
     @data = @service.get_ga_data(profile_id, start_date, end_date, metrics, {
         dimensions: 'ga:date'
     }).rows
