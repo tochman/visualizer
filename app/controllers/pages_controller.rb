@@ -1,4 +1,6 @@
 class PagesController < ApplicationController
+  include LineChartGenerator
+
   before_action :get_service, only: [:analytics, :get_data]
   def index
   end
@@ -39,6 +41,7 @@ class PagesController < ApplicationController
     @data = @service.get_ga_data(profile_id, start_date, end_date, metrics, {
         dimensions: 'ga:date'
     }).rows
+    @image = LineChartGenerator.generate(@data)
     render :analytics
   end
 

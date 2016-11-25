@@ -1,5 +1,8 @@
 .row
   - if @account_summaries
+    %h3
+    Properties for
+    = @account_summaries.username
     %ul
       - @account_summaries.items.each do |item|
         %li
@@ -18,12 +21,13 @@
 
 .row
   - if @data
-    - @data.each do |date|
-      %p
-        = Date.parse(date[0]).strftime('%F')
-        %span
-          Visits
-          = date[1]
-        %span
-          Page views
-          = date[2]
+    = image_tag @image
+    -#- @data.each do |date|
+    -#  %p
+    -#    = Date.parse(date[0]).strftime('%F')
+    -#    %span
+    -#      Visits
+    -#      = date[1]
+    -#    %span
+    -#      Page views
+    -#      = date[2]
