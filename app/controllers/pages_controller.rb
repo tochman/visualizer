@@ -21,7 +21,6 @@ class PagesController < ApplicationController
                                             redirect_uri: url_for(action: :callback),
                                             code: params[:code]
                                         })
-
     response = client.fetch_access_token!
     session[:access_token] = response['access_token']
     redirect_to url_for(action: :analytics)
