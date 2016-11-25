@@ -1,4 +1,5 @@
 class PagesController < ApplicationController
+  before_action :get_service, only: [:analytics, :get_data]
   def index
   end
 
@@ -27,8 +28,24 @@ class PagesController < ApplicationController
   end
 
   def analytics
-    service = Google::Apis::AnalyticsV3::AnalyticsService.new
-    service.authorization = session[:access_token]
-    @account_summaries = service.list_account_summaries
+    @account_summaries = @service.list_account_summaries
+  end
+
+  def get_data
+    profile_id = "ga:#{params[:profile_id]}"
+    start_date = Date.today.beginning_of_week.strftime('%F')
+    end_date = Date.today.end_of_week.strftime('%F')
+    metrics = 'ga:sessions'
+    @data = @service.get_ga_data(profile_id, start_date, end_date, metrics, {
+        dimensions: 'ga:date'
+    }).rows
+    render :analytics
+  end
+
+
+  private
+  def get_service
+    @service = Google::Apis::AnalyticsV3::AnalyticsService.new
+    @service.authorization = session[:access_token]
   end
 end
