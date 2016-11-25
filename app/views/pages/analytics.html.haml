@@ -18,4 +18,12 @@
 
 .row
   - if @data
-    = @data.inspect
+    - @data.each do |date|
+      %p
+        = Date.parse(date[0]).strftime('%F')
+        %span
+          Visits
+          = date[1]
+        %span
+          Page views
+          = date[2]
