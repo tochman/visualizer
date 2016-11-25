@@ -9,7 +9,7 @@ module LineChartGenerator
     dataset.each_with_index {|d, i| labels[i] = Date.parse(d[0]).strftime('%d/%m')}
     dataset.each {|data| visits.push data[1].to_i}
     dataset.each {|data| page_views.push data[2].to_i}
-    file_name = 'data.png'
+    file_name = "data_#{Date.today.strftime('%h_%m_%s')}.png"
     a.theme_pastel
     a.labels = labels
     a.data :Visits, visits
