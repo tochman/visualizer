@@ -31,6 +31,5 @@ class PagesController < ApplicationController
     service = Google::Apis::AnalyticsV3::AnalyticsService.new
     service.authorization = session[:access_token]
     @account_summaries = service.list_account_summaries
-    render layout: "application"
   end
 end
