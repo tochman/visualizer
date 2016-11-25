@@ -5,6 +5,14 @@ body {
 
 }
 
+.top-bar, .top-bar-left ul, li {
+  background-color:  #E67526;
+}
+
+.top-bar, .top-bar-left a, .top-bar-right a{
+  color: white;
+}
+
 .button {
   &.hollow.secondary {
     &:hover, &:focus {
