@@ -26,8 +26,8 @@ module ReportGenerator
       self.background_color = '#FFF5C3'
     end
 
-    chart = Image.read(File.join('tmp', "line_#{file}")).first
-    pie = Image.read(File.join('tmp', "pie_#{file}")).first
+    chart = Image.read(File.join('public', 'tmp', "line_#{file}")).first
+    pie = Image.read(File.join('public', 'tmp', "pie_#{file}")).first
     platforms = Image.read(File.join('app', 'assets', 'images', 'platforms.png')).first.resize_to_fit!(200)
 
     title = Image.new(600, 100) do
@@ -117,7 +117,7 @@ module ReportGenerator
     line.show_vertical_markers = true
     line.left_margin=10.0
     line.right_margin=10.0
-    line.write(File.join('public','tmp', "line_#{file_name}"))
+    line.write(File.join('public', 'tmp', "line_#{file_name}"))
   end
 
   def self.generate_pie_chart(sources, file_name)
