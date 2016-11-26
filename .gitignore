@@ -15,7 +15,7 @@
 .idea
 .DS_Store
 
-public/tmp/
+public/tmp/*.png
 
 # Env variables
 .env
