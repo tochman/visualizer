@@ -16,18 +16,11 @@
                 %ul
                   - property.profiles.each do |profile|
                     %li
-                      =  link_to profile.name, get_data_path(profile.id)
+                      =  link_to profile.name, get_data_path(account_id: item.id, web_property_id: property.id, profile_id: profile.id)
                       (#{profile.id})
 
 .row
-  - if @data
+  - if @image
+    %h3
+      = @property.name
     = image_tag @image
-    -#- @data.each do |date|
-    -#  %p
-    -#    = Date.parse(date[0]).strftime('%F')
-    -#    %span
-    -#      Visits
-    -#      = date[1]
-    -#    %span
-    -#      Page views
-    -#      = date[2]
