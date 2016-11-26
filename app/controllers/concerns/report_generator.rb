@@ -18,6 +18,8 @@ module ReportGenerator
     construct_report(property, file_name, basic_stats)
   end
 
+  private
+
   def self.construct_report(property, file, dataset)
     #binding.pry
     report = Image.new(600, 800) do
@@ -72,7 +74,7 @@ module ReportGenerator
     report.composite!(pie, 220, 275, OverCompositeOp)
     report.composite!(platforms, 25, 280, OverCompositeOp)
 
-    report.write(Rails.root.join('public', 'tmp', file))
+    report.write(File.join('public', 'tmp', file))
     return "/tmp/#{file}"
   end
 
@@ -115,7 +117,7 @@ module ReportGenerator
     line.show_vertical_markers = true
     line.left_margin=10.0
     line.right_margin=10.0
-    line.write(Rails.root.join('public', 'tmp', "line_#{file_name}"))
+    line.write(File.join('public','tmp', "line_#{file_name}"))
   end
 
   def self.generate_pie_chart(sources, file_name)
@@ -124,6 +126,6 @@ module ReportGenerator
     pie.title = 'Returning vs New Visitors'
     pie.data sources.rows[0][0].pluralize.to_sym, sources.rows[0][1].to_i
     pie.data sources.rows[1][0].pluralize.to_sym, sources.rows[1][1].to_i
-    pie.write(Rails.root.join('public', 'tmp', "pie_#{file_name}"))
+    pie.write(File.join('public', 'tmp', "pie_#{file_name}"))
   end
 end
