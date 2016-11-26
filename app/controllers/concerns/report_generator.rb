@@ -12,9 +12,11 @@ module ReportGenerator
   def self.generate(service, params, property)
     basic_stats = get_basic_stats(service, params)
     sources = get_sources(service, params)
+    os_sources = get_os_sources(service, params)
     file_name = "#{property.name.downcase}_week_#{Date.today.strftime('%U')}.png"
     generate_line_graph(basic_stats, file_name)
     generate_pie_chart(sources, file_name)
+    generate_net_chart(os_sources, file_name)
     construct_report(property, file_name, basic_stats, sources)
   end
 
@@ -28,6 +30,7 @@ module ReportGenerator
 
     chart = Image.read(File.join('public', 'tmp', "line_#{file}")).first
     pie = Image.read(File.join('public', 'tmp', "pie_#{file}")).first
+    spider = Image.read(File.join('public', 'tmp', "spider_#{file}")).first
     platforms = Image.read(File.join('app', 'assets', 'images', 'platforms.png')).first.resize_to_fit!(200)
     logo = Image.read(File.join('app', 'assets', 'images', 'basic-logo-450X450.png')).first.resize_to_fit!(100)
 
@@ -102,8 +105,9 @@ module ReportGenerator
     end
 
     report.composite!(chart, 10, 80, OverCompositeOp)
-    report.composite!(pie, 300, 265, OverCompositeOp)
-    report.composite!(platforms, 25, 280, OverCompositeOp)
+    report.composite!(spider, 60, 285, OverCompositeOp)
+    report.composite!(pie, 300, 280, OverCompositeOp)
+    report.composite!(platforms, 25, 285, OverCompositeOp)
     report.composite!(logo, SouthGravity, OverCompositeOp)
 
     #report.composite!(promo, SouthGravity, OverCompositeOp)
@@ -132,6 +136,17 @@ module ReportGenerator
         dimensions: 'ga:userType'
     })
     return data
+  end
+
+  def self.get_os_sources(service, params)
+    profile_id = "ga:#{params[:profile_id]}"
+    start_date = Date.today.beginning_of_week.strftime('%F')
+    end_date = Date.today.end_of_week.strftime('%F')
+    metrics = 'ga:sessions'
+    data = service.get_ga_data(profile_id, start_date, end_date, metrics, {
+        dimensions: 'ga:operatingSystem'
+    })
+    return data.rows.sort!{|a,b| a[1].to_i <=> b[1].to_i}.reverse
   end
 
   def self.generate_line_graph(dataset, file_name)
@@ -163,5 +178,19 @@ module ReportGenerator
     pie.left_margin = 0
     pie.right_margin = 0
     pie.write(File.join('public', 'tmp', "pie_#{file_name}"))
+  end
+
+  def self.generate_net_chart(os_sources, file_name)
+    labels = {}
+    os_sources[0..4].each_with_index { |d, i| labels[i] = d[0]}
+    net = Gruff::Spider.new(os_sources[0][1].to_i.round(-1), 265)
+    net.theme = DEFAULT_CHART_COLORS
+    net.legend_font_size = 30
+    net.labels = labels
+    net.top_margin = 45
+    net.left_margin = 30
+    net.right_margin = 30
+    os_sources[0..4].each {|data| net.data data[0].to_sym, data[1].to_i}
+    net.write(File.join('public', 'tmp', "spider_#{file_name}"))
   end
 end
