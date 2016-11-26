@@ -16,7 +16,7 @@
                 %ul
                   - property.profiles.each do |profile|
                     %li
-                      =  link_to profile.name, get_data_path(account_id: item.id, web_property_id: property.id, profile_id: profile.id)
+                      =  link_to profile.name, get_data_path(account_id: item.id, web_property_id: property.id, profile_id: profile.id), method: :post
                       (#{profile.id})
 
 .row
