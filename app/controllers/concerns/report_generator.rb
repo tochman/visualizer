@@ -14,11 +14,13 @@ module ReportGenerator
     sources = get_sources(service, params)
     os_sources = get_os_sources(service, params)
     traffic_sources = get_traffic_sources(service, params)
+    country_sources = get_country_sources(service, params)
     file_name = "#{property.name.downcase}_week_#{Date.today.strftime('%U')}.png"
     generate_line_graph(basic_stats, file_name)
     generate_pie_chart(sources, file_name)
     generate_net_chart(os_sources, file_name)
     generate_referers_graph(traffic_sources, file_name)
+    generate_countries_graph(country_sources, file_name)
     construct_report(property, file_name, basic_stats, sources)
   end
 
@@ -35,6 +37,7 @@ module ReportGenerator
     pie = Image.read(File.join('public', 'tmp', "pie_#{file}")).first
     spider = Image.read(File.join('public', 'tmp', "spider_#{file}")).first
     referrers = Image.read(File.join('public', 'tmp', "referrers_#{file}")).first
+    countries = Image.read(File.join('public', 'tmp', "countries_#{file}")).first
     platforms = Image.read(File.join('app', 'assets', 'images', 'platforms.png')).first.resize_to_fit!(200)
     logo = Image.read(File.join('app', 'assets', 'images', 'basic-logo-450X450.png')).first.resize_to_fit!(100)
 
@@ -131,6 +134,7 @@ module ReportGenerator
     report.composite!(chart, 10, 80, OverCompositeOp)
     report.composite!(spider, 60, 285, OverCompositeOp)
     report.composite!(referrers, 10, 495, OverCompositeOp)
+    report.composite!(countries, 280, 493, OverCompositeOp)
     report.composite!(pie, 300, 280, OverCompositeOp)
     report.composite!(platforms, 25, 285, OverCompositeOp)
     report.composite!(logo, SouthGravity, OverCompositeOp)
@@ -183,6 +187,19 @@ module ReportGenerator
         dimensions: 'ga:source',
         filters: 'ga:medium==referral',
         sort: 'ga:pageviews'
+    })
+    return data
+  end
+
+  def self.get_country_sources(service, params)
+    profile_id = "ga:#{params[:profile_id]}"
+    start_date = Date.today.beginning_of_week.strftime('%F')
+    end_date = Date.today.end_of_week.strftime('%F')
+    metrics = 'ga:sessions'
+    data = service.get_ga_data(profile_id, start_date, end_date, metrics, {
+        dimensions: 'ga:country',
+        filters: 'ga:medium==referral',
+        sort: '-ga:sessions'
     })
     return data
   end
@@ -245,13 +262,40 @@ module ReportGenerator
     line.labels = labels
     line.hide_legend=true
     traffic_sources.rows.reverse[0..4].each { |data| line.data data[0], data[1].to_i }
-    line.labels = labels
     line.maximum_value= (traffic_sources.rows.reverse[0][1].to_i*1.10).to_i.round(-1)
     line.minimum_value= 10
     line.use_data_label=true
     line.show_labels_for_bar_values = true
     line.left_margin=0
     line.right_margin=0
+
     line.write(File.join('public', 'tmp', "referrers_#{file_name}"))
+  end
+
+  def self.generate_countries_graph(sources, file_name)
+    acc = Gruff::Bar.new(265)
+    acc.theme = DEFAULT_CHART_COLORS
+    acc.font = "#{Rails.root}/app/assets/fonts/Quicksand-Bold.otf"
+    acc.title = 'Traffic by country'
+    #labels = {}
+    #sources.rows[0..4].each_with_index { |d, i| labels[i] = d[0] }
+    #acc.labels = labels
+    sources.rows[0..4].each { |data| acc.data data[0].to_sym, [data[1].to_i] }
+    acc.left_margin = 0
+    acc.right_margin = 40
+    acc.minimum_value = 0
+    acc.maximum_value = (sources.rows[0][1].to_i*1.20).to_i.round(-1)
+    acc.use_data_label=true
+    acc.show_labels_for_bar_values = true
+    acc.hide_legend=true
+    acc.marker_count = 5
+    str = ''
+    sources.rows[0..4].each { |c| str += "- #{c[0]} " }
+    #binding.pry
+    acc.x_axis_label = str
+
+
+    acc.write(File.join('public', 'tmp', "countries_#{file_name}"))
+
   end
 end
