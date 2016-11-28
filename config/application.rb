@@ -23,5 +23,9 @@ module Visualizer
       generate.routing_specs false
       generate.controller_specs false
     end
+
+    Slack.configure do |config|
+      config.token = ENV.fetch('SLACK_API_TOKEN')
+    end
   end
 end

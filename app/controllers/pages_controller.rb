@@ -1,5 +1,6 @@
 class PagesController < ApplicationController
   include ReportGenerator
+  include SlackNotifier
 
   before_action :get_service, only: [:analytics, :get_data]
 
@@ -32,6 +33,7 @@ class PagesController < ApplicationController
 
   def analytics
     @account_summaries = @service.list_account_summaries
+    session[:user_name] = @account_summaries.username
   end
 
   def get_data
@@ -39,6 +41,7 @@ class PagesController < ApplicationController
                                    params[:web_property_id])
 
     @image = ReportGenerator.generate(@service, params, @property)
+    SlackNotifier.notify(@image, "#{session[:user_name]} generated a report for #{@property.name}")
     render :analytics
   end
 
