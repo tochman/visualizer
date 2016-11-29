@@ -46,5 +46,20 @@ $(document).ready(function () {
                 $('.subscribe').append('<strong>' + data.responseJSON.message + '</strong>');
             });
     });
+
+
 });
 
+function addWebhookUrl() {
+    var input;
+    input = $('#webhook');
+    if (input.length && input.val().length) {
+        $(function () {
+            var addToUrl;
+            addToUrl = "hook=" + input.val();
+            $("a").attr('href', function (i, h) {
+                return h + (h.indexOf('?') != -1 ? "&" + addToUrl : "?" + addToUrl);
+            });
+        });
+    }
+}

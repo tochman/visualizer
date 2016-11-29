@@ -3,6 +3,7 @@
     %h4
       Properties for
       = @account_summaries.username
+      %input#webhook{type: 'text', placeholder: 'Slack webhook URL'}
     %ul.list
       - @account_summaries.items.each do |item|
         %li.account-name
@@ -17,7 +18,7 @@
                     %ul.list
                       - property.profiles.each do |profile|
                         %li.property-profile
-                          =  link_to profile.name, get_data_path(account_id: item.id, web_property_id: property.id, profile_id: profile.id), method: :get
+                          =  link_to profile.name, get_data_path(account_id: item.id, web_property_id: property.id, profile_id: profile.id), onclick: 'addWebhookUrl();'
 
 .row
   - if @image
