@@ -39,7 +39,6 @@ $(document).ready(function () {
                 data: {email: email}
             })
             .done(function (data) {
-                console.log(data.message);
                 $('.subscribe').html('<strong>' + data.message + '</strong>');
             })
             .fail(function (data) {
@@ -47,19 +46,41 @@ $(document).ready(function () {
             });
     });
 
+    $('#webhook').blur(function () {
+        var input = $('#webhook');
+        debugger;
+        if (input.val().length && parseUrl(input.val()).authority !== "hooks.slack.com") {
+            $('.list a').on('click.myDisable', function (e) {
+                e.preventDefault();
+            }).css({color: "red"});
+            if (input.parent().find('p').length == 0) {
+                input.append('<p><strong>Not a valid Slack Webhook</strong></p>');
+
+            }
+        } else {
+            input.parent().find('p').remove();
+            $('.list a').off('click.myDisable').removeAttr('style');
+            $(function () {
+                var addToUrl;
+                addToUrl = "hook=" + input.val();
+                $(".list a").attr('href', function (i, h) {
+                    return h + (h.indexOf('?') != -1 ? "&" + addToUrl : "?" + addToUrl);
+                });
+            });
+        }
+    })
 
 });
 
-function addWebhookUrl() {
-    var input;
-    input = $('#webhook');
-    if (input.length && input.val().length) {
-        $(function () {
-            var addToUrl;
-            addToUrl = "hook=" + input.val();
-            $("a").attr('href', function (i, h) {
-                return h + (h.indexOf('?') != -1 ? "&" + addToUrl : "?" + addToUrl);
-            });
-        });
-    }
+
+function parseUrl(url) {
+    var pattern = RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?");
+    var matches = url.match(pattern);
+    return {
+        scheme: matches[2],
+        authority: matches[4],
+        path: matches[5],
+        query: matches[7],
+        fragment: matches[9]
+    };
 }

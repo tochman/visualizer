@@ -15,11 +15,11 @@ module SlackNotifier
 
   def self.notify_hook(hook, image_path, message)
     client = Slack::Notifier.new hook
-    client.ping 'Visualizer report',
-                attachments: {
+    client.ping 'Google Analytics Visualizer report',
+                attachments: [{
                     image_url: image_path,
                     initial_comment: message
-                }
+                }]
   end
 
 end

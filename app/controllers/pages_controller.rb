@@ -43,7 +43,7 @@ class PagesController < ApplicationController
     @image = ReportGenerator.generate(@service, params, @property)
     message = "#{session[:user_name]} generated a report for #{@property.name}"
     SlackNotifier.notify(@image, message) if Rails.env.production?
-    SlackNotifier.notify_hook(params[:hook], "#{request.protocol}#{request.host_with_port}#{@image}", message) if params[:hook] && Rails.env.production?
+    SlackNotifier.notify_hook(params[:hook], "#{request.protocol}#{request.host_with_port}#{@image}", message) if params[:hook] #&& Rails.env.production?
     render :analytics
   end
 
