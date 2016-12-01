@@ -98,7 +98,7 @@ $(document).ready(function () {
                 $('.api_response').append('<p><strong>' + data.team_name + '</strong></p>');
                 $(function () {
                     $('.api_form')
-                        .append('<form id="notify-api-form"></form>');
+                        .append('<form id="notify-api-form" data-remote="true"></form>');
                     $('#notify-api-form')
                         .attr('action', '/notify_with_api').attr('method', 'post')
                         .append('<input type="hidden" name="image_path" value="' + $('#report-img').attr('src') +'" />')
@@ -125,7 +125,7 @@ function appendSelect(channels) {
     channels.forEach(function (value, i) {
         select.append($("<option></option>")
             .attr("value", value)
-            .text(i + '-' + value));
+            .text('#' + value));
     });
     return select;
 }

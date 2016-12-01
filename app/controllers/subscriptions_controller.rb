@@ -38,6 +38,10 @@ class SubscriptionsController < ApplicationController
 
   def notify_with_api
     SlackNotifier.api_notify(session[:api_token], params[:channel], params[:image_path], 'Visualizer report')
+    @message = {message: "Notification sent to ##{params[:channel]}"}
+    respond_to do |format|
+      format.js
+    end
   end
 
   def notify_with_webhook

@@ -35,6 +35,7 @@
         = button_tag 'Send', id: 'email-button', class: 'button', disabled: true
       #webhook
         %h5 Slack - using a webhook
+        %small Experimental
         %input#webhook-input{type: 'text', placeholder: 'Slack webhook URL'}
         = button_tag 'Post with Webhook', id: 'slack-webhook-button', class: 'button', disabled: true
       #api
