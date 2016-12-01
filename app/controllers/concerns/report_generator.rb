@@ -18,7 +18,7 @@ module ReportGenerator
     os_sources = get_os_sources(service, params)
     traffic_sources = get_traffic_sources(service, params)
     country_sources = get_country_sources(service, params)
-    file_name = "#{property.name.downcase}_week_#{Date.today.strftime('%U')}.png"
+    file_name = "#{property.name.downcase.gsub(' ', '_')}_week_#{Date.today.strftime('%U')}.png"
     generate_line_graph(basic_stats, file_name)
     generate_pie_chart(sources, file_name)
     generate_net_chart(os_sources, file_name)
