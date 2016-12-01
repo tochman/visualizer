@@ -29,6 +29,14 @@ $(document).ready(function () {
         $(document).foundation();
     });
 
+    $('#webhook-input').on('change keyup paste', function () {
+        $('#slack-webhook-button').prop("disabled", false);
+    });
+
+    $('#api-input').on('change keyup paste', function () {
+        $('#slack-api-button').prop("disabled", false);
+    });
+
 
     $('#subscribe').click(function () {
         var email = $('#email').val();
@@ -46,35 +54,84 @@ $(document).ready(function () {
             });
     });
 
-    $('#webhook').blur(function () {
-        var input = $('#webhook');
-        debugger;
+    $('#slack-webhook-button').on('click', function () {
+        var input = $('#webhook-input');
+        var message = '<p><strong>Not a valid Slack Webhook</strong></p>'
         if (input.val().length && parseUrl(input.val()).authority !== "hooks.slack.com") {
-            $('.list a').on('click.myDisable', function (e) {
-                e.preventDefault();
-            }).css({color: "red"});
-            if (input.parent().find('p').length == 0) {
-                input.append('<p><strong>Not a valid Slack Webhook</strong></p>');
-
+            if (input.parent().has('p').text().length == 0) {
+                input.parent().append(message);
             }
         } else {
             input.parent().find('p').remove();
-            $('.list a').off('click.myDisable').removeAttr('style');
-            $(function () {
-                var addToUrl;
-                addToUrl = "hook=" + input.val();
-                $(".list a").attr('href', function (i, h) {
-                    return h + (h.indexOf('?') != -1 ? "&" + addToUrl : "?" + addToUrl);
+            $.ajax({
+                    url: '/notify_with_webhook',
+                    type: 'post',
+                    dataType: 'json',
+                    data: {hook: input.val(), image_path: $('#report-img').attr('src')}
+                })
+                .done(function (data) {
+                    $('#webhook').hide();
+                    $('#api').hide();
+
+                    $('.api_response').html('<strong>' + data.message + '</strong>');
+                })
+                .fail(function (data) {
+                    // TODO: There is no error handler in the controller atm.
+                    $('.api_response').append('<strong>' + data.responseJSON.message + '</strong>');
                 });
-            });
+
         }
     })
+
+    $('#slack-api-button').on('click', function () {
+        var input = $('#api-input');
+        $.ajax({
+                url: '/check_api',
+                type: 'post',
+                dataType: 'json',
+                data: {api_token: input.val()}
+            })
+            .done(function (data) {
+                $('#webhook').hide();
+                $('#api').hide();
+                $('.api_response').html('<img src="' + data.icon + '">');
+                $('.api_response').append('<p><strong>' + data.team_name + '</strong></p>');
+                $(function () {
+                    $('.api_form')
+                        .append('<form id="notify-api-form"></form>');
+                    $('#notify-api-form')
+                        .attr('action', '/notify_with_api').attr('method', 'post')
+                        .append('<input type="hidden" name="image_path" value="' + $('#report-img').attr('src') +'" />')
+                        .append(appendSelect(data.channels))
+                        .append($('<input type="submit" value="Post notification" name="submit" class="button" />'));;
+                    //add in all the needed input elements
+
+                });
+
+            })
+            .fail(function (data) {
+                $('.api_response').html('<strong>' + data.responseJSON.message + '</strong>');
+            });
+
+// ('#report-img').attr('src')
+    })
+
 
 });
 
 
+function appendSelect(channels) {
+    var select = $("<select name='channel'></select>");
+    channels.forEach(function (value, i) {
+        select.append($("<option></option>")
+            .attr("value", value)
+            .text(i + '-' + value));
+    });
+    return select;
+}
+
 function parseUrl(url) {
-    var pattern = RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?");
+    var pattern = new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?");
     var matches = url.match(pattern);
     return {
         scheme: matches[2],

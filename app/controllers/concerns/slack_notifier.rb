@@ -1,25 +1,26 @@
 module SlackNotifier
   extend ActiveSupport::Concern
 
-  def self.notify(file, message)
-    client = Slack::Web::Client.new
+  def self.notify_hook(hook, image_path, message)
+    client = Slack::Notifier.new hook
+    client.ping 'Google Analytics Visualizer report',
+                attachments: [{
+                    image_url: image_path,
+                    #image_url: 'https://raw.githubusercontent.com/Raathigesh/HTML5AudioVisualizer/master/Visualizer.PNG',
+                    initial_comment: message
+                }]
+  end
+
+  def self.api_notify(token, channel, file, message)
+    client = Slack::Web::Client.new(token: token)
     client.files_upload(
-        channels: ENV.fetch('SLACK_CHANNEL'),
+        channels: channel,
         as_user: true,
         file: Faraday::UploadIO.new("public/#{file}", 'image/png'),
         title: 'Report',
         filename: 'report.png',
         initial_comment: message
     )
-  end
-
-  def self.notify_hook(hook, image_path, message)
-    client = Slack::Notifier.new hook
-    client.ping 'Google Analytics Visualizer report',
-                attachments: [{
-                    image_url: image_path,
-                    initial_comment: message
-                }]
   end
 
 end
