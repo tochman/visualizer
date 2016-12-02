@@ -81,7 +81,7 @@ $(document).ready(function () {
                 });
 
         }
-    })
+    });
 
     $('#slack-api-button').on('click', function () {
         var input = $('#api-input');
@@ -101,19 +101,15 @@ $(document).ready(function () {
                         .append('<form id="notify-api-form" data-remote="true"></form>');
                     $('#notify-api-form')
                         .attr('action', '/notify_with_api').attr('method', 'post')
-                        .append('<input type="hidden" name="image_path" value="' + $('#report-img').attr('src') +'" />')
+                        .append('<input type="hidden" name="image_path" value="' + $('#report-img').attr('src') + '" />')
                         .append(appendSelect(data.channels))
-                        .append($('<input type="submit" value="Post notification" name="submit" class="button" />'));;
-                    //add in all the needed input elements
-
+                        .append($('<input type="submit" value="Post notification" name="submit" class="button" />'));
                 });
 
             })
             .fail(function (data) {
                 $('.api_response').html('<strong>' + data.responseJSON.message + '</strong>');
             });
-
-// ('#report-img').attr('src')
     })
 
 

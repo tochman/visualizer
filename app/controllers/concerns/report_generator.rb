@@ -9,8 +9,8 @@ module ReportGenerator
                           font_color: '#7C786A',
                           background_colors: 'transparent'}
 
-  DEFAULT_START_DATE = Date.today.last_week.beginning_of_week.strftime('%F')
-  DEFAULT_END_DATE = Date.today.last_week.end_of_week.strftime('%F')
+  DEFAULT_START_DATE = 15.days.ago.strftime('%F')
+  DEFAULT_END_DATE = 1.day.ago.strftime('%F')
 
   def self.generate(service, params, property)
     basic_stats = get_basic_stats(service, params)
@@ -71,7 +71,7 @@ module ReportGenerator
 
 
     date_text = Draw.new
-    date_text.annotate(header, 0, 0, 20, 45, "Week of  #{Date.today.last_week.beginning_of_week.strftime('%B %d')} - #{Date.today.last_week.end_of_week.strftime('%B %d')}") do
+    date_text.annotate(header, 0, 0, 20, 45, "Week of  #{8.days.ago.strftime('%B %d')} - #{1.day.ago.strftime('%B %d')}") do
       date_text.gravity = NorthWestGravity
       self.font = "#{Rails.root}/app/assets/fonts/Quicksand-Bold.otf"
       self.pointsize = 13
@@ -153,7 +153,7 @@ module ReportGenerator
 
   def self.get_basic_stats(service, params)
     profile_id = "ga:#{params[:profile_id]}"
-    start_date = Date.today.last_week.beginning_of_week.strftime('%F')
+    start_date = DEFAULT_START_DATE
     end_date = DEFAULT_END_DATE
     metrics = 'ga:sessions, ga:uniquePageviews'
     data = service.get_ga_data(profile_id, start_date, end_date, metrics, {
@@ -294,8 +294,10 @@ module ReportGenerator
     acc.left_margin = 0
     acc.right_margin = 40
     acc.minimum_value = 0
-    acc.y_axis_increment = 10
     first_value = sources.rows[0][1].to_i
+    unless first_value > 100 then
+      acc.y_axis_increment = 10
+    end
     acc.maximum_value = first_value > 10 ? (sources.rows[0][1].to_i*1.20).to_i.round(-1) : first_value
     acc.use_data_label=true
     acc.show_labels_for_bar_values = true
