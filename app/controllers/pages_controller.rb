@@ -32,17 +32,30 @@ class PagesController < ApplicationController
   end
 
   def analytics
-    @account_summaries = @service.list_account_summaries
-    session[:user_name] = @account_summaries.username
+    begin
+      @account_summaries = @service.list_account_summaries
+      session[:user_name] = @account_summaries.username
+    rescue Google::Apis::AuthorizationError => ex
+      if ex.message
+        render json: {message: ex}
+      end
+    end
   end
 
   def get_data
-    @property = @service.get_web_property(params[:account_id],
-                                          params[:web_property_id])
+    begin
+      @property = @service.get_web_property(params[:account_id],
+                                            params[:web_property_id])
 
-    @image = ReportGenerator.generate(@service, params, @property)
-    message = "#{session[:user_name]} generated a report for #{@property.name}"
-    render :analytics
+      @image = ReportGenerator.generate(@service, params, @property)
+      message = "#{session[:user_name]} generated a report for #{@property.name}"
+      render :analytics
+    rescue Google::Apis::AuthorizationError => ex
+      if ex.message
+        render jason: {message: ex}
+      end
+    end
+
   end
 
 

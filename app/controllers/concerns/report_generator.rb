@@ -9,7 +9,7 @@ module ReportGenerator
                           font_color: '#7C786A',
                           background_colors: 'transparent'}
 
-  DEFAULT_START_DATE = 15.days.ago.strftime('%F')
+  DEFAULT_START_DATE = 8.days.ago.strftime('%F')
   DEFAULT_END_DATE = 1.day.ago.strftime('%F')
 
   def self.generate(service, params, property)
@@ -19,7 +19,12 @@ module ReportGenerator
     traffic_sources = get_traffic_sources(service, params)
     country_sources = get_country_sources(service, params)
     file_name = "#{property.name.downcase.gsub(' ', '_')}_week_#{Date.today.strftime('%U')}.png"
-    generate_line_graph(basic_stats, file_name)
+    #binding.pry
+    group = group_by_weeks(basic_stats)
+
+
+    #generate_line_graph(group[Date.today.cweek], file_name)
+    generate_line_graph(basic_stats.rows[0..6], file_name)
     generate_pie_chart(sources, file_name)
     generate_net_chart(os_sources, file_name)
     generate_referers_graph(traffic_sources, file_name)
@@ -153,7 +158,7 @@ module ReportGenerator
 
   def self.get_basic_stats(service, params)
     profile_id = "ga:#{params[:profile_id]}"
-    start_date = DEFAULT_START_DATE
+    start_date = (Date.parse(DEFAULT_START_DATE) - 7.days).strftime('%F')
     end_date = DEFAULT_END_DATE
     metrics = 'ga:sessions, ga:uniquePageviews'
     data = service.get_ga_data(profile_id, start_date, end_date, metrics, {
@@ -214,9 +219,9 @@ module ReportGenerator
     labels = {}
     visits = []
     page_views = []
-    dataset.rows.each_with_index { |d, i| labels[i] = Date.parse(d[0]).strftime('%d/%m') }
-    dataset.rows.each { |data| visits.push data[1].to_i }
-    dataset.rows.each { |data| page_views.push data[2].to_i }
+    dataset.each_with_index { |d, i| labels[i] = d[0].strftime('%d/%m') }
+    dataset.each { |data| visits.push data[1].to_i }
+    dataset.each { |data| page_views.push data[2].to_i }
 
     line = Gruff::Line.new(265)
     line.theme = DEFAULT_CHART_COLORS
@@ -311,5 +316,11 @@ module ReportGenerator
 
     acc.write(File.join('public', 'tmp', "countries_#{file_name}"))
 
+  end
+
+
+  def self.group_by_weeks(basic_stats)
+    array = basic_stats.rows.map { |sd| [Date.parse(sd[0]), sd[1..-1]].flatten }
+    Hash[array.group_by{|a| a[0].cweek}.map { |y, items| [y, items] }]
   end
 end
