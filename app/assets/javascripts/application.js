@@ -24,7 +24,7 @@
 //                                                                  |___/
 //
 
-$(document).ready(function () {
+document.addEventListener("turbolinks:load", function() {
     $(function () {
         $(document).foundation();
     });
@@ -56,7 +56,7 @@ $(document).ready(function () {
 
     $('#slack-webhook-button').on('click', function () {
         var input = $('#webhook-input');
-        var message = '<p><strong>Not a valid Slack Webhook</strong></p>'
+        var message = '<p><strong>Not a valid Slack Webhook</strong></p>';
         if (input.val().length && parseUrl(input.val()).authority !== "hooks.slack.com") {
             if (input.parent().has('p').text().length == 0) {
                 input.parent().append(message);
@@ -81,7 +81,7 @@ $(document).ready(function () {
                 });
 
         }
-    })
+    });
 
     $('#slack-api-button').on('click', function () {
         var input = $('#api-input');
@@ -103,7 +103,7 @@ $(document).ready(function () {
                         .attr('action', '/notify_with_api').attr('method', 'post')
                         .append('<input type="hidden" name="image_path" value="' + $('#report-img').attr('src') +'" />')
                         .append(appendSelect(data.channels))
-                        .append($('<input type="submit" value="Post notification" name="submit" class="button" />'));;
+                        .append($('<input type="submit" value="Post notification" name="submit" class="button" />'));
                     //add in all the needed input elements
 
                 });
@@ -114,7 +114,7 @@ $(document).ready(function () {
             });
 
 // ('#report-img').attr('src')
-    })
+    });
 
 
 });
