@@ -19,11 +19,6 @@ module ReportGenerator
     traffic_sources = get_traffic_sources(service, params)
     country_sources = get_country_sources(service, params)
     file_name = "#{property.name.downcase.gsub(' ', '_')}_week_#{Date.today.strftime('%U')}.png"
-    #binding.pry
-    group = group_by_weeks(basic_stats)
-
-
-    #generate_line_graph(group[Date.today.cweek], file_name)
     generate_line_graph(basic_stats.rows[0..6], file_name)
     generate_pie_chart(sources, file_name)
     generate_net_chart(os_sources, file_name)
@@ -32,11 +27,11 @@ module ReportGenerator
     construct_report(property, file_name, basic_stats, sources)
   end
 
-  private
+  #private
 
   def self.construct_report(property, file, dataset, sources)
-    #binding.pry
-    report = Image.new(550, 800) do
+    traffic_stats = calculate_traffic(dataset)
+    report = Image.new(550, 820) do
       self.background_color = '#FFF5C3'
       self.interlace = PNGInterlace
     end
@@ -58,7 +53,7 @@ module ReportGenerator
     title_text.annotate(header, 0, 0, 20, 15, "Weekly Insights for #{property.name}") do
       title_text.gravity = NorthWestGravity
       self.pointsize = 20
-      self.font = "#{Rails.root}/app/assets/fonts/Quicksand-Bold.otf"
+      self.font = "#{Rails.root}/app/assets/fonts/Quicksand-Bold.ttf"
       self.fill = '#FFF5C3'
       self.font_weight = BoldWeight
     end
@@ -67,7 +62,7 @@ module ReportGenerator
       sub_title_text = Draw.new
       sub_title_text.annotate(header, 0, 0, 20, 45, "Website URL: #{property.website_url}") do
         sub_title_text.gravity = NorthEastGravity
-        self.font = "#{Rails.root}/app/assets/fonts/Quicksand-Bold.otf"
+        self.font = "#{Rails.root}/app/assets/fonts/Quicksand-Bold.ttf"
         self.pointsize = 13
         self.fill = '#EB6E44'
         self.font_weight = BoldWeight
@@ -78,7 +73,7 @@ module ReportGenerator
     date_text = Draw.new
     date_text.annotate(header, 0, 0, 20, 45, "Week of  #{8.days.ago.strftime('%B %d')} - #{1.day.ago.strftime('%B %d')}") do
       date_text.gravity = NorthWestGravity
-      self.font = "#{Rails.root}/app/assets/fonts/Quicksand-Bold.otf"
+      self.font = "#{Rails.root}/app/assets/fonts/Quicksand-Bold.ttf"
       self.pointsize = 13
       self.fill = '#EB6E44'
       self.font_weight = BoldWeight
@@ -88,25 +83,35 @@ module ReportGenerator
     metrics_text = Draw.new
     metrics_text.annotate(report, 0, 0, 360, 85, 'Traffic Metrics') do
       metrics_text.gravity = NorthWestGravity
-      self.font = "#{Rails.root}/app/assets/fonts/Quicksand-Bold.otf"
+      self.font = "#{Rails.root}/app/assets/fonts/Quicksand-Bold.ttf"
       self.pointsize = 18
       self.fill = '#7C786A'
       self.font_weight = BoldWeight
     end
 
+    traffic_metrics_text = Draw.new
+    message = "Your site attracted #{traffic_stats.current_visits } visitors this week. \nThat's a #{traffic_stats.change_in_percent} #{traffic_stats.change_status} compared to the week before"
+    traffic_metrics_text.annotate(report, 0, 0, 20, 285, message) do
+      traffic_metrics_text.gravity = NorthGravity
+      self.font = "#{Rails.root}/app/assets/fonts/Quicksand-Bold.ttf"
+      self.pointsize = 12
+      self.fill = '#7C786A'
+      self.font_weight = BoldWeight
+    end
+
     sessions_text = Draw.new
-    sessions_text.annotate(report, 0, 0, 300, 123, "Visits: #{dataset.totals_for_all_results['ga:sessions']}") do
+    sessions_text.annotate(report, 0, 0, 300, 123, "Visits: #{traffic_stats.current_visits}") do
       sessions_text.gravity = NorthWestGravity
-      self.font = "#{Rails.root}/app/assets/fonts/Quicksand-Regular.otf"
+      self.font = "#{Rails.root}/app/assets/fonts/Quicksand-Regular.ttf"
       self.pointsize = 16
       self.fill = '#8DCDC1'
       self.font_weight = BoldWeight
     end
 
     page_views_text = Draw.new
-    page_views_text.annotate(report, 0, 0, 300, 148, "Page views: #{dataset.totals_for_all_results['ga:uniquePageviews']}") do
+    page_views_text.annotate(report, 0, 0, 300, 148, "Page views: #{traffic_stats.current_page_views}") do
       page_views_text.gravity = NorthWestGravity
-      self.font = "#{Rails.root}/app/assets/fonts/Quicksand-Regular.otf"
+      self.font = "#{Rails.root}/app/assets/fonts/Quicksand-Regular.ttf"
       self.pointsize = 16
       self.fill = '#EB6E44'
       self.font_weight = BoldWeight
@@ -115,7 +120,7 @@ module ReportGenerator
     new_visitors_text = Draw.new
     new_visitors_text.annotate(report, 0, 0, 300, 173, "#{sources.rows[0][0].pluralize}: #{sources.rows[0][1]}") do
       new_visitors_text.gravity = NorthWestGravity
-      self.font = "#{Rails.root}/app/assets/fonts/Quicksand-Regular.otf"
+      self.font = "#{Rails.root}/app/assets/fonts/Quicksand-Regular.ttf"
       self.pointsize = 16
       self.fill = '#8DCDC1'
       self.font_weight = BoldWeight
@@ -124,7 +129,7 @@ module ReportGenerator
     returning_visitors_text = Draw.new
     returning_visitors_text.annotate(report, 0, 0, 300, 198, "#{sources.rows[1][0].pluralize}: #{sources.rows[1][1]}") do
       returning_visitors_text.gravity = NorthWestGravity
-      self.font = "#{Rails.root}/app/assets/fonts/Quicksand-Regular.otf"
+      self.font = "#{Rails.root}/app/assets/fonts/Quicksand-Regular.ttf"
       self.pointsize = 16
       self.fill = '#EB6E44'
       self.font_weight = BoldWeight
@@ -133,7 +138,7 @@ module ReportGenerator
     promo_text = Draw.new
     promo_text.annotate(report, 0, 0, 0, 5, 'Generated by Analytics Visualizer by Craft Academy Labs'.upcase) do
       promo_text.gravity = SouthGravity
-      self.font = "#{Rails.root}/app/assets/fonts/Quicksand-Regular.otf"
+      self.font = "#{Rails.root}/app/assets/fonts/Quicksand-Regular.ttf"
 
       self.pointsize = 10
       self.font_family = 'Arial'
@@ -143,10 +148,10 @@ module ReportGenerator
 
     report.composite!(header, 0, 0, OverCompositeOp)
     report.composite!(chart, 10, 80, OverCompositeOp)
-    report.composite!(spider, 60, 285, OverCompositeOp)
-    report.composite!(referrers, 10, 495, OverCompositeOp)
-    report.composite!(countries, 280, 493, OverCompositeOp)
-    report.composite!(pie, 300, 280, OverCompositeOp)
+    report.composite!(spider, 60, 320, OverCompositeOp)
+    report.composite!(referrers, 10, 525, OverCompositeOp)
+    report.composite!(countries, 280, 523, OverCompositeOp)
+    report.composite!(pie, 300, 320, OverCompositeOp)
     report.composite!(platforms, 25, 285, OverCompositeOp)
     report.composite!(logo, SouthGravity, OverCompositeOp)
 
@@ -158,7 +163,7 @@ module ReportGenerator
 
   def self.get_basic_stats(service, params)
     profile_id = "ga:#{params[:profile_id]}"
-    start_date = (Date.parse(DEFAULT_START_DATE) - 7.days).strftime('%F')
+    start_date = (Date.parse(DEFAULT_START_DATE) - 6.days).strftime('%F')
     end_date = DEFAULT_END_DATE
     metrics = 'ga:sessions, ga:uniquePageviews'
     data = service.get_ga_data(profile_id, start_date, end_date, metrics, {
@@ -219,13 +224,14 @@ module ReportGenerator
     labels = {}
     visits = []
     page_views = []
-    dataset.each_with_index { |d, i| labels[i] = d[0].strftime('%d/%m') }
+    # dataset.each_with_index { |d, i| labels[i] = d[0].strftime('%d/%m') }
+    dataset.each_with_index { |d, i| labels[i] = Date.parse(d[0]).strftime('%d/%m') }
     dataset.each { |data| visits.push data[1].to_i }
     dataset.each { |data| page_views.push data[2].to_i }
 
     line = Gruff::Line.new(265)
     line.theme = DEFAULT_CHART_COLORS
-    line.font = "#{Rails.root}/app/assets/fonts/Quicksand-Bold.otf"
+    line.font = "#{Rails.root}/app/assets/fonts/Quicksand-Bold.ttf"
     line.title = 'Visits and Page Views'
     line.labels = labels
     line.data :Visits, visits
@@ -240,7 +246,7 @@ module ReportGenerator
   def self.generate_pie_chart(sources, file_name)
     pie = Gruff::Pie.new(265)
     pie.theme = DEFAULT_CHART_COLORS
-    pie.font = "#{Rails.root}/app/assets/fonts/Quicksand-Bold.otf"
+    pie.font = "#{Rails.root}/app/assets/fonts/Quicksand-Bold.ttf"
     pie.title = 'Returning vs New Visitors'
     pie.data sources.rows[0][0].pluralize.to_sym, sources.rows[0][1].to_i
     pie.data sources.rows[1][0].pluralize.to_sym, sources.rows[1][1].to_i
@@ -253,12 +259,12 @@ module ReportGenerator
   def self.generate_net_chart(os_sources, file_name)
     labels = {}
     os_sources[0..4].each_with_index { |d, i| labels[i] = d[0] }
-    net = Gruff::Spider.new(os_sources[0][1].to_i.round(-1)*1.1, 265)
+    net = Gruff::Spider.new(os_sources[0][1].to_i.round(-1)*1.1, 235)
     net.theme = DEFAULT_CHART_COLORS
-    net.font = "#{Rails.root}/app/assets/fonts/Quicksand-Bold.otf"
+    net.font = "#{Rails.root}/app/assets/fonts/Quicksand-Bold.ttf"
     net.legend_font_size = 30
     net.labels = labels
-    net.top_margin = 45
+    net.top_margin = 55
     net.left_margin = 30
     net.right_margin = 30
     net.label_formatting = '%.0f'
@@ -271,7 +277,7 @@ module ReportGenerator
     traffic_sources.rows[0..4].each_with_index { |d, i| labels[i] = d[0] }
     line = Gruff::SideBar.new(265)
     line.theme = DEFAULT_CHART_COLORS
-    line.font = "#{Rails.root}/app/assets/fonts/Quicksand-Bold.otf"
+    line.font = "#{Rails.root}/app/assets/fonts/Quicksand-Bold.ttf"
     line.title = 'Top Referring Sites'
     line.labels = labels
     line.hide_legend=true
@@ -293,7 +299,7 @@ module ReportGenerator
   def self.generate_countries_graph(sources, file_name)
     acc = Gruff::Bar.new(265)
     acc.theme = DEFAULT_CHART_COLORS
-    acc.font = "#{Rails.root}/app/assets/fonts/Quicksand-Bold.otf"
+    acc.font = "#{Rails.root}/app/assets/fonts/Quicksand-Bold.ttf"
     acc.title = 'Traffic by country'
     sources.rows[0..4].each { |data| acc.data data[0].to_sym, [data[1].to_i] }
     acc.left_margin = 0
@@ -321,6 +327,45 @@ module ReportGenerator
 
   def self.group_by_weeks(basic_stats)
     array = basic_stats.rows.map { |sd| [Date.parse(sd[0]), sd[1..-1]].flatten }
-    Hash[array.group_by{|a| a[0].cweek}.map { |y, items| [y, items] }]
+    Hash[array.group_by { |a| a[0].cweek }.map { |y, items| [y, items] }]
+  end
+
+  def self.calculate_traffic(basic_stats)
+    previous_period, current_period = basic_stats.rows.each_slice(basic_stats.rows.size/2).to_a
+    t = Period.new(previous_period, current_period)
+    #binding.pry
+  end
+
+  class Period
+    attr_accessor :previous_visits, :current_visits, :previous_page_views, :current_page_views
+
+    def initialize(previous_period, current_period)
+      @previous_visits = summarize_visits(previous_period)
+      @current_visits = summarize_visits(current_period)
+      @previous_page_views = summarize_page_views(previous_period)
+      @current_page_views = summarize_page_views(current_period)
+    end
+
+    def summarize_visits(period)
+      period.inject(0) { |sum, e| sum + e[1].to_i }
+    end
+
+    def summarize_page_views(period)
+      period.inject(0) { |sum, e| sum + e[2].to_i }
+    end
+
+    def change
+      (((self.current_visits.to_f / self.previous_visits) - 1)*100).round(1)
+    end
+
+    def change_in_percent
+      "#{self.change}%"
+    end
+
+    def change_status
+      self.change.positive? ? 'increase' : 'decrease'
+    end
+
+
   end
 end
