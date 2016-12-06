@@ -19,7 +19,7 @@ module ReportGenerator
     traffic_sources = get_traffic_sources(service, params)
     country_sources = get_country_sources(service, params)
     file_name = "#{property.name.downcase.gsub(' ', '_')}_week_#{Date.today.strftime('%U')}.png"
-    generate_line_graph(basic_stats.rows[0..6], file_name)
+    generate_line_graph(basic_stats.rows.last(7), file_name)
     generate_pie_chart(sources, file_name)
     generate_net_chart(os_sources, file_name)
     generate_referers_graph(traffic_sources, file_name)
@@ -71,7 +71,7 @@ module ReportGenerator
 
 
     date_text = Draw.new
-    date_text.annotate(header, 0, 0, 20, 45, "Week of  #{8.days.ago.strftime('%B %d')} - #{1.day.ago.strftime('%B %d')}") do
+    date_text.annotate(header, 0, 0, 20, 45, "Week of  #{traffic_stats.current_start_date.strftime('%B %d')} - #{traffic_stats.current_end_date.strftime('%B %d')}") do
       date_text.gravity = NorthWestGravity
       self.font = "#{Rails.root}/app/assets/fonts/Quicksand-Bold.ttf"
       self.pointsize = 13
@@ -224,7 +224,6 @@ module ReportGenerator
     labels = {}
     visits = []
     page_views = []
-    # dataset.each_with_index { |d, i| labels[i] = d[0].strftime('%d/%m') }
     dataset.each_with_index { |d, i| labels[i] = Date.parse(d[0]).strftime('%d/%m') }
     dataset.each { |data| visits.push data[1].to_i }
     dataset.each { |data| page_views.push data[2].to_i }
@@ -235,7 +234,7 @@ module ReportGenerator
     line.title = 'Visits and Page Views'
     line.labels = labels
     line.data :Visits, visits
-    line.data :Page_Vievs, page_views
+    line.data :'Page Views', page_views
     line.show_vertical_markers = true
     line.left_margin=10.0
     line.right_margin=10.0
@@ -337,13 +336,22 @@ module ReportGenerator
   end
 
   class Period
-    attr_accessor :previous_visits, :current_visits, :previous_page_views, :current_page_views
+    attr_accessor :previous_visits,
+                  :current_visits,
+                  :previous_page_views,
+                  :current_page_views,
+                  :current_start_date,
+                  :current_end_date
+
 
     def initialize(previous_period, current_period)
       @previous_visits = summarize_visits(previous_period)
       @current_visits = summarize_visits(current_period)
       @previous_page_views = summarize_page_views(previous_period)
       @current_page_views = summarize_page_views(current_period)
+      @current_start_date = set_date(current_period[0][0])
+      @current_end_date = set_date(current_period[-1][0])
+
     end
 
     def summarize_visits(period)
@@ -364,6 +372,10 @@ module ReportGenerator
 
     def change_status
       self.change.positive? ? 'increase' : 'decrease'
+    end
+
+    def set_date(index)
+      Date.parse(index)
     end
 
 
