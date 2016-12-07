@@ -1,14 +1,12 @@
 module SlackNotifier
-  extend ActiveSupport::Concern
 
   def self.notify_hook(hook, image_path, message)
     client = Slack::Notifier.new hook
     client.ping 'Google Analytics Visualizer report',
                 attachments: [{
-                    image_url: image_path,
-                    #image_url: 'https://raw.githubusercontent.com/Raathigesh/HTML5AudioVisualizer/master/Visualizer.PNG',
-                    initial_comment: message
-                }]
+                                  image_url: image_path,
+                                  initial_comment: message
+                              }]
   end
 
   def self.api_notify(token, channel, file, message)
