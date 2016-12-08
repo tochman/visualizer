@@ -25,7 +25,7 @@ class Period
     self.change.positive? ? 'increase' : 'decrease'
   end
 
-  private
+ # private
 
   def summarize_visits(period)
     period.inject(0) { |sum, e| sum + e[1].to_i }
