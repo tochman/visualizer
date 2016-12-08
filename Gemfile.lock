@@ -299,6 +299,7 @@ GEM
       faraday (~> 0.9)
       jwt (~> 1.5)
       multi_json (~> 1.10)
+    slack-notifier (1.5.1)
     slack-ruby-client (0.7.7)
       activesupport
       faraday
@@ -380,6 +381,7 @@ DEPENDENCIES
   rspec-rails
   sass-rails (~> 5.0)
   shoulda-matchers
+  slack-notifier
   slack-ruby-client
   spring
   spring-watcher-listen (~> 2.0.0)
