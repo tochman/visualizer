@@ -18,7 +18,7 @@ class Asset
                 :current_period
 
 
-  def initialize(service, params, property)
+  def initialize(service, params)
     @service = service
     @params = params
     @property = get_property
