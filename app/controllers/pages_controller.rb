@@ -44,15 +44,15 @@ class PagesController < ApplicationController
 
   def get_data
     begin
-      @property = @service.get_web_property(params[:account_id],
+      property = @service.get_web_property(params[:account_id],
                                             params[:web_property_id])
-
-      @image = ReportGenerator.generate(@service, params, @property)
-      message = "#{session[:user_name]} generated a report for #{@property.name}"
+      asset = Asset.new(@service, params)
+      @property = asset.property
+      @image = asset.image
       render :analytics
     rescue Google::Apis::AuthorizationError => ex
       if ex.message
-        render jason: {message: ex}
+        render json: {message: ex}
       end
     end
 
