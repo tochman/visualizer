@@ -4,18 +4,18 @@ class Asset
   DEFAULT_END_DATE = 1.day.ago.strftime('%F')
 
 
-  attr_accessor :basic_stats,
-                :sources,
-                :os_sources,
-                :traffic_sources,
-                :country_sources,
-                :service,
-                :params,
-                :property,
-                :current_start_date,
-                :current_end_date,
-                :previous_period,
-                :current_period
+  attr_reader :basic_stats,
+              :sources,
+              :os_sources,
+              :traffic_sources,
+              :country_sources,
+              :service,
+              :params,
+              :property,
+              :current_start_date,
+              :current_end_date,
+              :previous_period,
+              :current_period
 
 
   def initialize(service, params)
