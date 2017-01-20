@@ -9,8 +9,6 @@ class AnalyticsPariod
               :os_sources,
               :traffic_sources,
               :country_sources,
-              :service,
-              :params,
               :property,
               :current_start_date,
               :current_end_date,
@@ -19,14 +17,12 @@ class AnalyticsPariod
 
 
   def initialize(service, params)
-    @service = service
-    @params = params
-    @property = get_property
-    @basic_stats = get_basic_stats
-    @sources = get_sources
-    @os_sources = get_os_sources
-    @traffic_sources = get_traffic_sources
-    @country_sources = get_country_sources
+    @property = get_property(service, params)
+    @basic_stats = get_basic_stats(params)
+    @sources = get_sources(params)
+    @os_sources = get_os_sources(params)
+    @traffic_sources = get_traffic_sources(params)
+    @country_sources = get_country_sources(params)
     @previous_pariod, @current_period = basic_stats.rows.each_slice(basic_stats.rows.size/2).to_a
     @current_start_date = set_date(current_period[0][0])
     @current_end_date = set_date(current_period[-1][0])
@@ -77,13 +73,13 @@ class AnalyticsPariod
     Date.parse(index)
   end
 
-  def get_property
+  def get_property(service, params)
     @service.get_web_property(@params[:account_id],
                               @params[:web_property_id])
   end
 
-  def get_basic_stats
-    profile_id = "ga:#{@params[:profile_id]}"
+  def get_basic_stats(params)
+    profile_id = "ga:#{params[:profile_id]}"
     start_date = (Date.parse(DEFAULT_START_DATE) - 6.days).strftime('%F')
     end_date = DEFAULT_END_DATE
     metrics = 'ga:sessions, ga:uniquePageviews'
@@ -93,8 +89,8 @@ class AnalyticsPariod
     return data
   end
 
-  def get_sources
-    profile_id = "ga:#{@params[:profile_id]}"
+  def get_sources(params)
+    profile_id = "ga:#{params[:profile_id]}"
     start_date = DEFAULT_START_DATE
     end_date = DEFAULT_END_DATE
     metrics = 'ga:sessions'
@@ -104,8 +100,8 @@ class AnalyticsPariod
     return data
   end
 
-  def get_os_sources
-    profile_id = "ga:#{@params[:profile_id]}"
+  def get_os_sources(params)
+    profile_id = "ga:#{params[:profile_id]}"
     start_date = DEFAULT_START_DATE
     end_date = DEFAULT_END_DATE
     metrics = 'ga:sessions'
@@ -115,8 +111,8 @@ class AnalyticsPariod
     return data.rows.sort! { |a, b| a[1].to_i <=> b[1].to_i }.reverse
   end
 
-  def get_traffic_sources
-    profile_id = "ga:#{@params[:profile_id]}"
+  def get_traffic_sources(params)
+    profile_id = "ga:#{params[:profile_id]}"
     start_date = DEFAULT_START_DATE
     end_date = DEFAULT_END_DATE
     metrics = 'ga:pageviews'
@@ -128,8 +124,8 @@ class AnalyticsPariod
     return data
   end
 
-  def get_country_sources
-    profile_id = "ga:#{@params[:profile_id]}"
+  def get_country_sources(params)
+    profile_id = "ga:#{params[:profile_id]}"
     start_date = DEFAULT_START_DATE
     end_date = DEFAULT_END_DATE
     metrics = 'ga:sessions'
