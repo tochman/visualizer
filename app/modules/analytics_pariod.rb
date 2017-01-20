@@ -18,11 +18,11 @@ class AnalyticsPariod
 
   def initialize(service, params)
     @property = get_property(service, params)
-    @basic_stats = get_basic_stats(params)
-    @sources = get_sources(params)
-    @os_sources = get_os_sources(params)
-    @traffic_sources = get_traffic_sources(params)
-    @country_sources = get_country_sources(params)
+    @basic_stats = get_basic_stats(service, params)
+    @sources = get_sources(service, params)
+    @os_sources = get_os_sources(service, params)
+    @traffic_sources = get_traffic_sources(service, params)
+    @country_sources = get_country_sources(service, params)
     @previous_pariod, @current_period = basic_stats.rows.each_slice(basic_stats.rows.size/2).to_a
     @current_start_date = set_date(current_period[0][0])
     @current_end_date = set_date(current_period[-1][0])
@@ -74,11 +74,11 @@ class AnalyticsPariod
   end
 
   def get_property(service, params)
-    @service.get_web_property(@params[:account_id],
-                              @params[:web_property_id])
+    service.get_web_property(params[:account_id],
+                             params[:web_property_id])
   end
 
-  def get_basic_stats(params)
+  def get_basic_stats(service, params)
     profile_id = "ga:#{params[:profile_id]}"
     start_date = (Date.parse(DEFAULT_START_DATE) - 6.days).strftime('%F')
     end_date = DEFAULT_END_DATE
@@ -89,7 +89,7 @@ class AnalyticsPariod
     return data
   end
 
-  def get_sources(params)
+  def get_sources(service, params)
     profile_id = "ga:#{params[:profile_id]}"
     start_date = DEFAULT_START_DATE
     end_date = DEFAULT_END_DATE
@@ -100,7 +100,7 @@ class AnalyticsPariod
     return data
   end
 
-  def get_os_sources(params)
+  def get_os_sources(service, params)
     profile_id = "ga:#{params[:profile_id]}"
     start_date = DEFAULT_START_DATE
     end_date = DEFAULT_END_DATE
@@ -111,7 +111,7 @@ class AnalyticsPariod
     return data.rows.sort! { |a, b| a[1].to_i <=> b[1].to_i }.reverse
   end
 
-  def get_traffic_sources(params)
+  def get_traffic_sources(service, params)
     profile_id = "ga:#{params[:profile_id]}"
     start_date = DEFAULT_START_DATE
     end_date = DEFAULT_END_DATE
@@ -124,7 +124,7 @@ class AnalyticsPariod
     return data
   end
 
-  def get_country_sources(params)
+  def get_country_sources(service, params)
     profile_id = "ga:#{params[:profile_id]}"
     start_date = DEFAULT_START_DATE
     end_date = DEFAULT_END_DATE
