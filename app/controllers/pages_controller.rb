@@ -43,9 +43,9 @@ class PagesController < ApplicationController
 
   def get_data
     begin
-      asset = Asset.new(@service, params)
+      asset = AnalyticsPariod.new(@service, params)
       @property = asset.property
-      @image = asset.image
+      @image = ReportGenerator.generate(asset)
       render :analytics
     rescue Google::Apis::AuthorizationError => ex
       if ex.message

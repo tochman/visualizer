@@ -1,4 +1,4 @@
-class Asset
+class AnalyticsPariod
 
   DEFAULT_START_DATE = 8.days.ago.strftime('%F')
   DEFAULT_END_DATE = 1.day.ago.strftime('%F')
@@ -55,10 +55,6 @@ class Asset
 
   def previous_page_views
     summarize_page_views(@previous_pariod)
-  end
-
-  def image
-    ReportGenerator.generate(self)
   end
 
   private

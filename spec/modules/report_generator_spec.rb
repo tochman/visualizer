@@ -1,4 +1,4 @@
-describe Asset do
+describe AnalyticsPariod do
 
   let(:basic_increase_stats) { double(Google::Apis::AnalyticsV3::GaData, rows: [['20161118', '50', '100'],
                                                                                 ['20161119', '50', '100'],
