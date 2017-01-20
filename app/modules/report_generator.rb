@@ -12,21 +12,14 @@ module ReportGenerator
   DEFAULT_END_DATE = 1.day.ago.strftime('%F')
 
   def self.generate(asset)
-    basic_stats = asset.basic_stats
-    sources = asset.sources
-    os_sources = asset.os_sources
-    traffic_sources = asset.traffic_sources
-    country_sources = asset.country_sources
     file_name = "#{asset.property.name.downcase.gsub(' ', '_')}_week_#{Date.today.strftime('%U')}.png"
-    generate_line_graph(basic_stats.rows.last(7), file_name)
-    generate_pie_chart(sources, file_name)
-    generate_net_chart(os_sources, file_name)
-    generate_referers_graph(traffic_sources, file_name)
-    generate_countries_graph(country_sources, file_name)
+    generate_line_graph(asset.basic_stats.rows.last(7), file_name)
+    generate_pie_chart(asset.sources, file_name)
+    generate_net_chart(asset.os_sources, file_name)
+    generate_referers_graph(asset.traffic_sources, file_name)
+    generate_countries_graph(asset.country_sources, file_name)
     construct_report(asset, file_name)
   end
-
-  #private
 
   def self.construct_report(asset, file)
       traffic_stats = asset.basic_stats
