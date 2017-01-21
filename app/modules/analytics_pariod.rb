@@ -10,8 +10,6 @@ class AnalyticsPariod
               :traffic_sources,
               :country_sources,
               :property,
-              :current_start_date,
-              :current_end_date,
               :previous_period,
               :current_period
 
@@ -24,8 +22,6 @@ class AnalyticsPariod
     @traffic_sources = get_traffic_sources(service, params)
     @country_sources = get_country_sources(service, params)
     @previous_period, @current_period = basic_stats.rows.each_slice(basic_stats.rows.size/2).to_a
-    @current_start_date = set_date(current_period[0][0])
-    @current_end_date = set_date(current_period[-1][0])
   end
 
 
@@ -42,7 +38,7 @@ class AnalyticsPariod
   end
 
   def previous_visits
-    summarize_visits(@previous_pariod)
+    summarize_visits(@previous_period)
   end
 
   def current_page_views
@@ -50,7 +46,15 @@ class AnalyticsPariod
   end
 
   def previous_page_views
-    summarize_page_views(@previous_pariod)
+    summarize_page_views(@previous_period)
+  end
+
+  def current_start_date
+    set_date(@current_period[0][0])
+  end
+
+  def current_end_date
+    set_date(current_period[-1][0])
   end
 
   private
