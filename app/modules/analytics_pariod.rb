@@ -23,7 +23,7 @@ class AnalyticsPariod
     @os_sources = get_os_sources(service, params)
     @traffic_sources = get_traffic_sources(service, params)
     @country_sources = get_country_sources(service, params)
-    @previous_pariod, @current_period = basic_stats.rows.each_slice(basic_stats.rows.size/2).to_a
+    @previous_period, @current_period = basic_stats.rows.each_slice(basic_stats.rows.size/2).to_a
     @current_start_date = set_date(current_period[0][0])
     @current_end_date = set_date(current_period[-1][0])
   end
