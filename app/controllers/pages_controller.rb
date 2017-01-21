@@ -43,7 +43,7 @@ class PagesController < ApplicationController
 
   def get_data
     begin
-      asset = AnalyticsPariod.new(@service, params)
+      asset = AnalyticsPeriod.new(@service, params)
       @property = asset.property
       @image = ReportGenerator.generate(asset)
       render :analytics

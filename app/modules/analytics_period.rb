@@ -1,4 +1,4 @@
-class AnalyticsPariod
+class AnalyticsPeriod
 
   DEFAULT_START_DATE = 8.days.ago.strftime('%F')
   DEFAULT_END_DATE = 1.day.ago.strftime('%F')
@@ -21,7 +21,7 @@ class AnalyticsPariod
     @os_sources = get_os_sources(service, params)
     @traffic_sources = get_traffic_sources(service, params)
     @country_sources = get_country_sources(service, params)
-    @previous_period, @current_period = basic_stats.rows.each_slice(basic_stats.rows.size/2).to_a
+    @previous_period, @current_period = get_periods(@basic_stats)
   end
 
 
@@ -71,11 +71,16 @@ class AnalyticsPariod
     (((current_visits.to_f / previous_visits) - 1)*100).round(1)
   end
 
+  def get_periods(period)
+    period.rows.each_slice(basic_stats.rows.size/2).to_a
+  end
+
   protected
 
   def set_date(index)
     Date.parse(index)
   end
+
 
   def get_property(service, params)
     service.get_web_property(params[:account_id],
